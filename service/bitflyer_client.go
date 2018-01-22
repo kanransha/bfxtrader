@@ -58,3 +58,8 @@ func (client *BitClient) NewRequest(pathDir string, method string, bodyJSON stri
 	req.Header.Set("Content-Type", "application/json")
 	return req, nil
 }
+
+//Do Do request
+func (client *BitClient) Do(request *http.Request) (*http.Response, error) {
+	return client.httpClient.Do(request)
+}

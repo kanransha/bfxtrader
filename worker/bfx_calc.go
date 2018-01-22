@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"sync"
 	"time"
 
 	"../job"
@@ -13,9 +14,10 @@ func BFXCalc(market *model.BFXMarket) {
 	nextTime := market.GetLastValues().GetTime().Add(sleepTime)
 	time.Sleep(time.Until(nextTime))
 	ch := make(chan *model.BFXPrice)
+	m := new(sync.Mutex)
 	for {
 		go job.GetBFXPrice(ch)
-		go job.CalcBFXData(ch, market)
+		go job.CalcBFXData(ch, m, market)
 		time.Sleep(time.Minute)
 	}
 }

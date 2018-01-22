@@ -7,5 +7,7 @@ import (
 
 func main() {
 	bfxMarket := model.NewBFXMarket(100, 21, 10, 60)
-	worker.BFXCalc(bfxMarket)
+	ch := make(chan bool)
+	go worker.BFXCalc(bfxMarket, ch)
+	worker.BFXTrade(bfxMarket, ch)
 }

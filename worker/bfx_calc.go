@@ -9,7 +9,7 @@ import (
 )
 
 //BFXCalc Get BFX price and calc market
-func BFXCalc(market *model.BFXMarket) {
+func BFXCalc(market *model.BFXMarket, finish chan bool) {
 	sleepTime := time.Duration(market.SecInterval()) * time.Second
 	nextTime := market.GetLastValues().GetTime().Add(sleepTime)
 	time.Sleep(time.Until(nextTime))
@@ -17,7 +17,7 @@ func BFXCalc(market *model.BFXMarket) {
 	m := new(sync.Mutex)
 	for {
 		go job.GetBFXPrice(ch)
-		go job.CalcBFXData(ch, m, market)
+		go job.CalcBFXData(ch, finish, m, market)
 		time.Sleep(time.Minute)
 	}
 }

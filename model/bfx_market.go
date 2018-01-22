@@ -62,7 +62,6 @@ func ohlcRequest(count int, interval int) *bytes.Buffer {
 		res.Body.Close()
 		fmt.Println(req.URL.String())
 		panic("OHLC")
-		//return ohlcRequest(count, interval)
 	}
 	defer res.Body.Close()
 	buf := new(bytes.Buffer)
@@ -144,4 +143,26 @@ func (market *BFXMarket) SetBFXPrice(price *BFXPrice) {
 	newBFXValues.Print()
 	market.dataArray = market.dataArray[1:]
 	market.dataArray = append(market.dataArray, newBFXValues)
+}
+
+//GetCurrentSignal Return "BUY" or "SELL" by EMA values
+func (market *BFXMarket) GetCurrentSignal() string {
+	lastValues := market.GetLastValues()
+	if lastValues.fastEMA > lastValues.slowEMA {
+		return "SELL"
+	}
+	return "BUY"
+}
+
+//CalcNextCross Calculate price and side of next cross
+func (market *BFXMarket) CalcNextCross() (float32, string) {
+	lastValues := market.GetLastValues()
+	currentSignal := market.GetCurrentSignal()
+	f := float32(market.fastEMAPeriod)
+	s := float32(market.slowEMAPeriod)
+	ret := (f+1)*(s-1)/2/(s-f)*lastValues.slowEMA - (s+1)*(f-1)/2/(s-f)*lastValues.fastEMA
+	if currentSignal == "BUY" {
+		return ret, "SELL"
+	}
+	return ret, "BUY"
 }

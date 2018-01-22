@@ -29,14 +29,15 @@ func GetCollateralValues() *CollateralValues {
 		fmt.Println("GetCollateralValues Response Error")
 		return GetCollateralValues()
 	}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(res.Body)
 	if res.StatusCode != 200 {
 		fmt.Printf("Collateral StatusCode = %d\n", res.StatusCode)
+		fmt.Println(buf.String())
 		res.Body.Close()
 		return GetCollateralValues()
 	}
 	defer res.Body.Close()
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(res.Body)
 	jsonBytes := buf.Bytes()
 	jsonData := new(CollateralValues)
 	if err := json.Unmarshal(jsonBytes, jsonData); err != nil {

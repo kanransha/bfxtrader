@@ -27,7 +27,7 @@ type parentOrderBody struct {
 //ParentOrderAcceptanceID Parent order acceptance ID
 type ParentOrderAcceptanceID string
 
-type orderResponseBody struct {
+type parentOrderResponseBody struct {
 	ID ParentOrderAcceptanceID `json:"parent_order_acceptance_id"`
 }
 
@@ -48,16 +48,17 @@ func parentOrder(orderMethod string, minuteToExpire int, timeInForce string, par
 		fmt.Println("ParentOrder Response Error")
 		return parentOrder(orderMethod, minuteToExpire, timeInForce, parameters)
 	}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(res.Body)
 	if res.StatusCode != 200 {
 		res.Body.Close()
-		fmt.Printf("Collateral StatusCode = %d\n", res.StatusCode)
+		fmt.Printf("ParentOrder StatusCode = %d\n", res.StatusCode)
+		fmt.Println(buf.String())
 		return parentOrder(orderMethod, minuteToExpire, timeInForce, parameters)
 	}
 	defer res.Body.Close()
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(res.Body)
 	jsonBytesResp := buf.Bytes()
-	jsonData := new(orderResponseBody)
+	jsonData := new(parentOrderResponseBody)
 	if err := json.Unmarshal(jsonBytesResp, jsonData); err != nil {
 		fmt.Println("ParentOrder Response JSON Error")
 		return parentOrder(orderMethod, minuteToExpire, timeInForce, parameters)
@@ -66,34 +67,17 @@ func parentOrder(orderMethod string, minuteToExpire int, timeInForce string, par
 	return jsonData.ID
 }
 
-//IFDStopMarketBuyOrder Do parent buy order of IFD, STOP order first and then MARKET order of same size
-func IFDStopMarketBuyOrder(triggerPrice float32, size float32) ParentOrderAcceptanceID {
+//IFDStopMarketOrder Do parent order of IFD, STOP order first and then MARKET order of same size
+func IFDStopMarketOrder(side string, triggerPrice float32, size float32) ParentOrderAcceptanceID {
 	productType := "FX_BTC_JPY"
-	side := "BUY"
 	firstOrder := newParentOrderParam(productType, "STOP", side, 0, triggerPrice, size)
 	secondOrder := newParentOrderParam(productType, "MARKET", side, 0, 0, size)
 	parameters := []parentOrderParam{*firstOrder, *secondOrder}
 	return parentOrder("IFD", 2, "GTC", parameters)
 }
 
-//IFDStopMarketSellOrder Do parent sell order of IFD, STOP order first and then MARKET order of same size
-func IFDStopMarketSellOrder(triggerPrice float32, size float32) ParentOrderAcceptanceID {
-	productType := "FX_BTC_JPY"
-	side := "SELL"
-	firstOrder := newParentOrderParam(productType, "STOP", side, 0, triggerPrice, size)
-	secondOrder := newParentOrderParam(productType, "MARKET", side, 0, 0, size)
-	parameters := []parentOrderParam{*firstOrder, *secondOrder}
-	return parentOrder("IFD", 2, "GTC", parameters)
-}
-
-//StopBuyOrder Do parent sell order of STOP
-func StopBuyOrder(triggerPrice float32, size float32) ParentOrderAcceptanceID {
-	order := newParentOrderParam("FX_BTC_JPY", "STOP", "BUY", 0, triggerPrice, size)
-	return parentOrder("SIMPLE", 2, "GTC", []parentOrderParam{*order})
-}
-
-//StopSellOrder Do parent sell order of STOP
-func StopSellOrder(triggerPrice float32, size float32) ParentOrderAcceptanceID {
-	order := newParentOrderParam("FX_BTC_JPY", "STOP", "SELL", 0, triggerPrice, size)
+//StopOrder Do parent order of STOP
+func StopOrder(side string, triggerPrice float32, size float32) ParentOrderAcceptanceID {
+	order := newParentOrderParam("FX_BTC_JPY", "STOP", side, 0, triggerPrice, size)
 	return parentOrder("SIMPLE", 2, "GTC", []parentOrderParam{*order})
 }

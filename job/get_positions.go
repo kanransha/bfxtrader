@@ -1,10 +1,6 @@
 package job
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-
 	"../service"
 )
 
@@ -28,32 +24,10 @@ type Positions []Position
 //GetPositions Get positions
 func GetPositions() *Positions {
 	client := service.NewBitClient()
-	request, err := client.NewRequest("/v1/me/getpositions?product_code=FX_BTC_JPY", "GET", "")
-	if err != nil {
-		fmt.Println("GetPositions Request Error")
-		return GetPositions()
-	}
-	res, err := client.Do(request)
-	if err != nil {
-		fmt.Println("GetPositions Response Error")
-		return GetPositions()
-	}
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(res.Body)
-	if res.StatusCode != 200 {
-		fmt.Printf("GetPositions StatusCode = %d\n", res.StatusCode)
-		fmt.Println(buf.String())
-		res.Body.Close()
-		return GetPositions()
-	}
-	defer res.Body.Close()
-	jsonBytes := buf.Bytes()
+	pathDir := "/v1/me/getpositions"
+	queryStr := "product_code=FX_BTC_JPY"
 	jsonData := new(Positions)
-	if err := json.Unmarshal(jsonBytes, jsonData); err != nil {
-		fmt.Println("GetPositions JSON Unmarchal error")
-		fmt.Println(buf.String())
-		return GetPositions()
-	}
+	client.Get(pathDir, queryStr, jsonData)
 	return jsonData
 }
 

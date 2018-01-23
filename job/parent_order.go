@@ -1,10 +1,6 @@
 package job
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-
 	"../service"
 )
 
@@ -36,35 +32,12 @@ func newParentOrderParam(productCode string, conditionType string, side string, 
 }
 
 func parentOrder(orderMethod string, minuteToExpire int, timeInForce string, parameters []parentOrderParam) ParentOrderAcceptanceID {
-	jsonBytes, err := json.Marshal(parentOrderBody{orderMethod, minuteToExpire, timeInForce, parameters})
+	postBody := parentOrderBody{orderMethod, minuteToExpire, timeInForce, parameters}
 	client := service.NewBitClient()
-	request, err := client.NewRequest("/v1/me/sendparentorder", "POST", string(jsonBytes))
-	if err != nil {
-		fmt.Println("ParentOrder Request Error")
-		return parentOrder(orderMethod, minuteToExpire, timeInForce, parameters)
-	}
-	res, err := client.Do(request)
-	if err != nil {
-		fmt.Println("ParentOrder Response Error")
-		return parentOrder(orderMethod, minuteToExpire, timeInForce, parameters)
-	}
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(res.Body)
-	if res.StatusCode != 200 {
-		res.Body.Close()
-		fmt.Printf("ParentOrder StatusCode = %d\n", res.StatusCode)
-		fmt.Println(buf.String())
-		return parentOrder(orderMethod, minuteToExpire, timeInForce, parameters)
-	}
-	defer res.Body.Close()
-	jsonBytesResp := buf.Bytes()
-	jsonData := new(parentOrderResponseBody)
-	if err := json.Unmarshal(jsonBytesResp, jsonData); err != nil {
-		fmt.Println("ParentOrder Response JSON Error")
-		return parentOrder(orderMethod, minuteToExpire, timeInForce, parameters)
-	}
-	defer fmt.Println("Order Completed: ", jsonData.ID)
-	return jsonData.ID
+	pathDir := "/v1/me/sendparentorder"
+	response := new(parentOrderResponseBody)
+	client.Post(pathDir, postBody, response)
+	return response.ID
 }
 
 //IFDStopMarketOrder Do parent order of IFD, STOP order first and then MARKET order of same size

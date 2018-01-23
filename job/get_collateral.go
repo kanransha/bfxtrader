@@ -1,10 +1,6 @@
 package job
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-
 	"../service"
 )
 
@@ -19,30 +15,7 @@ type CollateralValues struct {
 //GetCollateralValues Get collateral values by bitflyer API
 func GetCollateralValues() *CollateralValues {
 	client := service.NewBitClient()
-	request, err := client.NewRequest("/v1/me/getcollateral", "GET", "")
-	if err != nil {
-		fmt.Println("GetCollateralValues Request Error")
-		return GetCollateralValues()
-	}
-	res, err := client.Do(request)
-	if err != nil {
-		fmt.Println("GetCollateralValues Response Error")
-		return GetCollateralValues()
-	}
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(res.Body)
-	if res.StatusCode != 200 {
-		fmt.Printf("Collateral StatusCode = %d\n", res.StatusCode)
-		fmt.Println(buf.String())
-		res.Body.Close()
-		return GetCollateralValues()
-	}
-	defer res.Body.Close()
-	jsonBytes := buf.Bytes()
 	jsonData := new(CollateralValues)
-	if err := json.Unmarshal(jsonBytes, jsonData); err != nil {
-		fmt.Println("Collateral JSON Unmarchal error")
-		return GetCollateralValues()
-	}
+	client.Get("/v1/me/getcollateral", "", jsonData)
 	return jsonData
 }

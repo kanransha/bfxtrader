@@ -149,9 +149,9 @@ func (market *BFXMarket) SetBFXPrice(price *BFXPrice) {
 func (market *BFXMarket) GetCurrentSignal() string {
 	lastValues := market.GetLastValues()
 	if lastValues.fastEMA > lastValues.slowEMA {
-		return "SELL"
+		return "BUY"
 	}
-	return "BUY"
+	return "SELL"
 }
 
 //CalcNextCross Calculate price and side of next cross

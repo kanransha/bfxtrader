@@ -1,11 +1,10 @@
 package worker
 
 import (
+	"bfxtrader/job"
+	"bfxtrader/model"
 	"sync"
 	"time"
-
-	"../job"
-	"../model"
 )
 
 //BFXCalc Get BFX price and calc market

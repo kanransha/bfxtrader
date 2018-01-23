@@ -1,9 +1,8 @@
 package model
 
 import (
+	"bfxtrader/service"
 	"fmt"
-
-	"../service"
 )
 
 //BFXStatus Store BFX status

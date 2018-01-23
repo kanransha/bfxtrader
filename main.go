@@ -1,9 +1,9 @@
 package main
 
 import (
-	"./model"
-	"./service"
-	"./worker"
+	"bfxtrader/model"
+	"bfxtrader/service"
+	"bfxtrader/worker"
 )
 
 func main() {

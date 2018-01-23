@@ -1,7 +1,7 @@
 package job
 
 import (
-	"../service"
+	"bfxtrader/service"
 )
 
 type parentOrderParam struct {

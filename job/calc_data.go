@@ -1,9 +1,8 @@
 package job
 
 import (
+	"bfxtrader/model"
 	"sync"
-
-	"../model"
 )
 
 //CalcBFXData Calculate BFX Data

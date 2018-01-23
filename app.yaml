@@ -1,0 +1,7 @@
+includes:
+- env.yaml
+
+env: flex
+runtime: go
+manual_scaling:
+  instances: 1

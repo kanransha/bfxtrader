@@ -1,13 +1,12 @@
 package job
 
 import (
+	"bfxtrader/model"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
-
-	"../model"
 )
 
 type board struct {

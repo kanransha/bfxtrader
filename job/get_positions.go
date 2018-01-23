@@ -1,7 +1,7 @@
 package job
 
 import (
-	"../service"
+	"bfxtrader/service"
 )
 
 //Position Position of bitflyer FX

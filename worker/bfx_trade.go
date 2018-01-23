@@ -1,10 +1,9 @@
 package worker
 
 import (
+	"bfxtrader/job"
+	"bfxtrader/model"
 	"fmt"
-
-	"../job"
-	"../model"
 )
 
 func opposite(side string) string {

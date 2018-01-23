@@ -75,6 +75,9 @@ func (client *BitClient) GetResponseBody(request *http.Request) []byte {
 		bitClientError("Response Read")
 	}
 	if res.StatusCode != 200 {
+		if res.StatusCode == 401 {
+			fmt.Println("Request Header: ", request.Header)
+		}
 		bitClientError(fmt.Sprintf("Response Code = %d\n%s", res.StatusCode, string(byteRet)))
 	}
 	return byteRet
@@ -109,7 +112,10 @@ func (client *BitClient) Post(pathDir string, body interface{}, response interfa
 
 //Get Get request
 func (client *BitClient) Get(pathDir string, query string, response interface{}) {
-	pathWithQuery := pathDir + "?" + query
+	pathWithQuery := pathDir
+	if query != "" {
+		pathWithQuery = pathWithQuery + "?" + query
+	}
 	request := client.NewRequest(pathWithQuery, "GET", "")
 	responseBody := client.GetResponseBody(request)
 	client.JSONDecode(responseBody, response)

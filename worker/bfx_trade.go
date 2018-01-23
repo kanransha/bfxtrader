@@ -30,7 +30,7 @@ func BFXTrade(market *model.BFXMarket, finish chan bool) {
 		currentSize, currentSide = job.GetCurrentBFX()
 		if currentSide == "" {
 			fmt.Println("No Postion")
-			currentSide := market.GetCurrentSignal()
+			currentSide = market.GetCurrentSignal()
 			fmt.Println("MarketOrder   side:", currentSide, ", size:", size)
 			job.MarketOrder(currentSide, size)
 		}

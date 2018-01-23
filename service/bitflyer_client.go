@@ -22,6 +22,11 @@ type BitClient struct {
 }
 
 func bitClientError(message string) {
+	lineClient := NewLineClient()
+	lineMessage := "Error Occurred!\n"
+	lineMessage += "App bfxtrader has been stopped by BitClient error"
+	lineMessage += message
+	lineClient.PushTextMessage(lineMessage)
 	panic("BitClient Error: " + message)
 }
 
@@ -30,11 +35,11 @@ func NewBitClient() *BitClient {
 	endpoint := "https://api.bitflyer.jp"
 	apiKey := os.Getenv("BITFLYER_KEY")
 	if apiKey == "" {
-		panic("API Key")
+		panic("BITFLYER_KEY")
 	}
 	apiSecret := os.Getenv("BITFLYER_SECRET")
 	if apiSecret == "" {
-		panic("API Secret")
+		panic("BITFLYER_SECRET")
 	}
 	return &BitClient{endpoint, apiKey, apiSecret, &http.Client{}}
 }
@@ -75,10 +80,18 @@ func (client *BitClient) GetResponseBody(request *http.Request) []byte {
 		bitClientError("Response Read")
 	}
 	if res.StatusCode != 200 {
-		if res.StatusCode == 401 {
-			fmt.Println("Request Header: ", request.Header)
+		switch res.StatusCode {
+		case 400, 401:
+			fmt.Println("Unauthorized Request Header: ", request.Header)
+			bitClientError(fmt.Sprintf("Response Code = %d\n%s", res.StatusCode, string(byteRet)))
+		case 403:
+			bitClientError(fmt.Sprintf("Forbidden\nResponse Code = %d\n%s", res.StatusCode, string(byteRet)))
+		case 429:
+			bitClientError(fmt.Sprintf("Too Many Requests\nResponse Code = %d\n%s", res.StatusCode, string(byteRet)))
+		case 500:
+			fmt.Println("Internal Server Error Try Again")
+			return []byte("ISE")
 		}
-		bitClientError(fmt.Sprintf("Response Code = %d\n%s", res.StatusCode, string(byteRet)))
 	}
 	return byteRet
 }
@@ -104,6 +117,10 @@ func (client *BitClient) Post(pathDir string, body interface{}, response interfa
 	bodyString := client.JSONEncode(body)
 	request := client.NewRequest(pathDir, "POST", bodyString)
 	responseBody := client.GetResponseBody(request)
+	if string(responseBody) == "ISE" {
+		client.Post(pathDir, body, response)
+		return
+	}
 	if response == nil {
 		return
 	}
@@ -118,5 +135,9 @@ func (client *BitClient) Get(pathDir string, query string, response interface{})
 	}
 	request := client.NewRequest(pathWithQuery, "GET", "")
 	responseBody := client.GetResponseBody(request)
+	if string(responseBody) == "ISE" {
+		client.Get(pathDir, query, response)
+		return
+	}
 	client.JSONDecode(responseBody, response)
 }

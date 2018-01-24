@@ -1,8 +1,8 @@
 package worker
 
 import (
-	"bfxtrader/job"
-	"bfxtrader/model"
+	"fxtrader/job"
+	"fxtrader/model"
 	"sync"
 	"time"
 )

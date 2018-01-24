@@ -1,8 +1,8 @@
 package model
 
 import (
-	"bfxtrader/service"
 	"fmt"
+	"fxtrader/service"
 )
 
 //BFXStatus Store BFX status
@@ -12,7 +12,7 @@ type BFXStatus struct {
 	side   string
 }
 
-type execution struct {
+type bfxExecution struct {
 	ID         int     `json:"id"`
 	OrderID    string  `json:"child_order_id"`
 	Side       string  `json:"side"`
@@ -23,23 +23,23 @@ type execution struct {
 	AcceptID   string  `json:"child_order_acceptance_id"`
 }
 
-type executions []execution
+type bfxExecutions []bfxExecution
 
-func getExecutions(lastID int) *executions {
+func getBFXExecutions(lastID int) *bfxExecutions {
 	pathDir := "/v1/me/getexecutions"
 	queryStr := "product_code=FX_BTC_JPY&count=1"
 	if lastID != 0 {
 		queryStr = "product_code=FX_BTC_JPY&after=" + fmt.Sprint(lastID)
 	}
 	client := service.NewBitClient()
-	jsonData := new(executions)
+	jsonData := new(bfxExecutions)
 	client.Get(pathDir, queryStr, jsonData)
 	return jsonData
 }
 
 //NewBFXStatus Create new BFX status
 func NewBFXStatus() *BFXStatus {
-	exes := getExecutions(0)
+	exes := getBFXExecutions(0)
 	status := new(BFXStatus)
 	status.lastID = (*exes)[0].ID
 	status.side = "BUY"

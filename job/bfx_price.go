@@ -1,34 +1,34 @@
 package job
 
 import (
-	"bfxtrader/model"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"fxtrader/model"
 	"net/http"
 	"time"
 )
 
-type board struct {
-	MidPrice float32 `json:"mid_price"`
-	Bids     []order `json:"bids"`
-	Asks     []order `json:"asks"`
+type bfxBoard struct {
+	MidPrice float32    `json:"mid_price"`
+	Bids     []bfxOrder `json:"bids"`
+	Asks     []bfxOrder `json:"asks"`
 }
 
-type order struct {
+type bfxOrder struct {
 	Price float32 `json:"price"`
 	Size  float32 `json:"size"`
 }
 
-func boardRequest() *bytes.Buffer {
+func bfxBoardRequest() *bytes.Buffer {
 	res, err := http.Get("https://api.bitflyer.jp/v1/board?product_code=FX_BTC_JPY")
 	if err != nil {
-		return boardRequest()
+		return bfxBoardRequest()
 	}
 	if res.StatusCode != 200 {
 		fmt.Printf("Board StatusCode = %d\n", res.StatusCode)
 		res.Body.Close()
-		return boardRequest()
+		return bfxBoardRequest()
 	}
 	defer res.Body.Close()
 	buf := new(bytes.Buffer)
@@ -38,9 +38,9 @@ func boardRequest() *bytes.Buffer {
 
 //GetBFXPrice Get BFX price and write to channel
 func GetBFXPrice(c chan *model.BFXPrice) {
-	jsonBytes := boardRequest().Bytes()
+	jsonBytes := bfxBoardRequest().Bytes()
 	timeNow := time.Now()
-	jsonData := new(board)
+	jsonData := new(bfxBoard)
 	if err := json.Unmarshal(jsonBytes, jsonData); err != nil {
 		fmt.Println("JSON Unmarchal error")
 		GetBFXPrice(c)

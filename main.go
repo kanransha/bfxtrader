@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bfxtrader/model"
-	"bfxtrader/service"
-	"bfxtrader/worker"
+	"fxtrader/model"
+	"fxtrader/service"
+	"fxtrader/worker"
 )
 
 func main() {

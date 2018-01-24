@@ -1,7 +1,7 @@
 package job
 
 import (
-	"bfxtrader/model"
+	"fxtrader/model"
 	"sync"
 )
 

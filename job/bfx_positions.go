@@ -1,11 +1,11 @@
 package job
 
 import (
-	"bfxtrader/service"
+	"fxtrader/service"
 )
 
-//Position Position of bitflyer FX
-type Position struct {
+//BFXPosition BFXPosition of bitflyer FX
+type BFXPosition struct {
 	ProductCode         string  `json:"product_code"`
 	Side                string  `json:"side"`
 	Price               float32 `json:"price"`
@@ -18,22 +18,22 @@ type Position struct {
 	PNL                 float32 `json:"pnl"`
 }
 
-//Positions Array of position
-type Positions []Position
+//BFXPositions Array of position
+type BFXPositions []BFXPosition
 
-//GetPositions Get positions
-func GetPositions() *Positions {
+//GetBFXPositions Get positions
+func GetBFXPositions() *BFXPositions {
 	client := service.NewBitClient()
 	pathDir := "/v1/me/getpositions"
 	queryStr := "product_code=FX_BTC_JPY"
-	jsonData := new(Positions)
+	jsonData := new(BFXPositions)
 	client.Get(pathDir, queryStr, jsonData)
 	return jsonData
 }
 
 //GetCurrentBFX Get current BFX size and side
 func GetCurrentBFX() (float32, string) {
-	positions := GetPositions()
+	positions := GetBFXPositions()
 	if len(*positions) == 0 {
 		return float32(0), "ZERO"
 	}

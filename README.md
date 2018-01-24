@@ -1,6 +1,6 @@
-# BFXTrader
+# fxtrader
 
-Bitflyer FX auto trade program
+FX auto trade program
 
 ## Description
 This software is just for my own use
@@ -9,10 +9,12 @@ This software is just for my own use
 Calculate EMA and trade with the information
 
 ## Requirement
+Line API token
 Bitflyer trade class account and its API Key, API Secret
 
 ## Installation
-    $ git clone https://github.com/kanransha/bfxtrader.git
+`$ git clone https://github.com/kanransha/bfxtrader.git`
+Make `env.yaml` to set environment variable
 
 ## Author
-[@kanransha](https://twitter.com/kanransha)
+Mitsuhiro Hattori ([@kanransha](https://twitter.com/kanransha))

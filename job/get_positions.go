@@ -35,7 +35,7 @@ func GetPositions() *Positions {
 func GetCurrentBFX() (float32, string) {
 	positions := GetPositions()
 	if len(*positions) == 0 {
-		return float32(0), ""
+		return float32(0), "ZERO"
 	}
 	side := (*positions)[0].Side
 	size := float32(0)

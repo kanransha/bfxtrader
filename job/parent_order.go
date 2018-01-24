@@ -2,6 +2,7 @@ package job
 
 import (
 	"bfxtrader/service"
+	"fmt"
 )
 
 type parentOrderParam struct {
@@ -42,6 +43,7 @@ func parentOrder(orderMethod string, minuteToExpire int, timeInForce string, par
 
 //IFDStopMarketOrder Do parent order of IFD, STOP order first and then MARKET order of same size
 func IFDStopMarketOrder(side string, triggerPrice float32, size float32) ParentOrderAcceptanceID {
+	fmt.Printf("IFDOrder  side: %s, trigger: %.0f , size: %f\n", side, triggerPrice, size)
 	productType := "FX_BTC_JPY"
 	firstOrder := newParentOrderParam(productType, "STOP", side, 0, triggerPrice, size)
 	secondOrder := newParentOrderParam(productType, "MARKET", side, 0, 0, size)

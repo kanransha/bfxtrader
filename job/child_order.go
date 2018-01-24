@@ -2,6 +2,7 @@ package job
 
 import (
 	"bfxtrader/service"
+	"fmt"
 )
 
 type childOrderBody struct {
@@ -32,5 +33,6 @@ func childOrder(productCode string, orderType string, side string, price float32
 
 //MarketOrder Do simple market order
 func MarketOrder(side string, size float32) ChildOrderAcceptanceID {
+	fmt.Println("MarketOrder   side:", side, ", size:", size)
 	return childOrder("FX_BTC_JPY", "MARKET", side, 0, size, 2, "FOK")
 }
